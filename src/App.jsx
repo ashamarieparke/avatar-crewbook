@@ -41,8 +41,48 @@ const bendingStyles = [
   { id: 'nonbender', label: 'Nonbender', note: 'Resourceful and creative' },
 ]
 
+const crewCategories = [
+  {
+    id: 'leader',
+    label: 'Leader',
+    note: 'Guides the team from the front line.',
+    nations: ['air', 'fire'],
+    bendings: ['air', 'fire', 'nonbender'],
+  },
+  {
+    id: 'guardian',
+    label: 'Guardian',
+    note: 'Protective and steady under pressure.',
+    nations: ['water', 'earth'],
+    bendings: ['water', 'earth', 'nonbender'],
+  },
+  {
+    id: 'strategist',
+    label: 'Strategist',
+    note: 'Plans carefully and reads the whole battlefield.',
+    nations: ['air', 'water'],
+    bendings: ['air', 'water', 'nonbender'],
+  },
+  {
+    id: 'scout',
+    label: 'Scout',
+    note: 'Quick, observant, and hard to pin down.',
+    nations: ['air', 'earth'],
+    bendings: ['air', 'earth', 'nonbender'],
+  },
+]
+
+const getCategoryConfig = (categoryId) =>
+  crewCategories.find((category) => category.id === categoryId)
+
+const inferCategory = (nation, bending) =>
+  crewCategories.find(
+    (category) => category.nations.includes(nation) && category.bendings.includes(bending),
+  )?.id ?? ''
+
 const initialFormState = {
   name: '',
+  category: '',
   nation: '',
   bending: '',
 }
@@ -52,6 +92,7 @@ const CREWMATES_TABLE = 'crewmates'
 const normalizeCrewmate = (row) => ({
   id: row.id ?? crypto.randomUUID(),
   name: row.name ?? 'Unnamed recruit',
+  category: row.category ?? inferCategory(row.nation ?? '', row.bending ?? ''),
   nation: row.nation ?? '',
   bending: row.bending ?? '',
   bio: row.bio ?? '',
@@ -63,6 +104,7 @@ const getSortTime = (value) => new Date(value).getTime() || 0
 const gaangPresets = [
   {
     name: 'Aang',
+    category: 'leader',
     nation: 'air',
     bending: 'air',
     photo:
@@ -70,6 +112,7 @@ const gaangPresets = [
   },
   {
     name: 'Katara',
+    category: 'guardian',
     nation: 'water',
     bending: 'water',
     photo:
@@ -77,6 +120,7 @@ const gaangPresets = [
   },
   {
     name: 'Sokka',
+    category: 'strategist',
     nation: 'water',
     bending: 'nonbender',
     photo:
@@ -84,6 +128,7 @@ const gaangPresets = [
   },
   {
     name: 'Toph',
+    category: 'guardian',
     nation: 'earth',
     bending: 'earth',
     photo:
@@ -91,6 +136,7 @@ const gaangPresets = [
   },
   {
     name: 'Zuko',
+    category: 'leader',
     nation: 'fire',
     bending: 'fire',
     photo:
@@ -98,6 +144,7 @@ const gaangPresets = [
   },
   {
     name: 'Suki',
+    category: 'scout',
     nation: 'earth',
     bending: 'nonbender',
     photo:
@@ -114,10 +161,17 @@ function App() {
   const [isSaving, setIsSaving] = useState(false)
   const [formError, setFormError] = useState('')
 
+  const selectedCategory = getCategoryConfig(formData.category)
   const selectedNation = nations.find((nation) => nation.id === formData.nation)
   const selectedBending = bendingStyles.find(
     (style) => style.id === formData.bending,
   )
+  const allowedNations = selectedCategory
+    ? nations.filter((nation) => selectedCategory.nations.includes(nation.id))
+    : []
+  const allowedBendingStyles = selectedCategory
+    ? bendingStyles.filter((style) => selectedCategory.bendings.includes(style.id))
+    : []
 
   const orderedCrewmates = useMemo(
     () =>
@@ -159,13 +213,24 @@ function App() {
   const updateField = (field, value) => {
     setFormData((current) => ({
       ...current,
-      [field]: value,
+      ...(field === 'category'
+        ? {
+            category: value,
+            nation: '',
+            bending: '',
+          }
+        : field === 'nation' || field === 'bending'
+          ? current.category
+            ? { [field]: value }
+            : {}
+          : { [field]: value }),
     }))
   }
 
   const applyPreset = (preset) => {
     setFormData({
       name: preset.name,
+      category: preset.category,
       nation: preset.nation,
       bending: preset.bending,
     })
@@ -174,6 +239,7 @@ function App() {
   const startEditingCrewmate = (crewmate) => {
     setFormData({
       name: crewmate.name,
+      category: crewmate.category,
       nation: crewmate.nation,
       bending: crewmate.bending,
     })
@@ -282,7 +348,8 @@ function App() {
   const handleSubmit = async (event) => {
     event.preventDefault()
 
-    if (!formData.name || !formData.nation || !formData.bending) {
+    if (!formData.name || !formData.category || !formData.nation || !formData.bending) {
+      setFormError('Choose a category, nation, and bending style before saving.')
       return
     }
 
@@ -298,6 +365,7 @@ function App() {
 
     const payload = {
       name: formData.name.trim(),
+      category: formData.category,
       nation: formData.nation,
       bending: formData.bending,
     }
@@ -400,8 +468,12 @@ function App() {
               bendingStyles={bendingStyles}
               gaangPresets={gaangPresets}
               formData={formData}
+              selectedCategory={selectedCategory}
               selectedNation={selectedNation}
               selectedBending={selectedBending}
+              crewCategories={crewCategories}
+              allowedNations={allowedNations}
+              allowedBendingStyles={allowedBendingStyles}
               editingCrewmateId={editingCrewmateId}
               isSaving={isSaving}
               formError={formError}
@@ -419,6 +491,7 @@ function App() {
             <SummaryPage
               orderedCrewmates={orderedCrewmates}
               isLoadingCrew={isLoadingCrew}
+              crewCategories={crewCategories}
               nations={nations}
               bendingStyles={bendingStyles}
               onStartEdit={startEditingCrewmate}
@@ -431,6 +504,7 @@ function App() {
             <CrewmateDetailPage
               crewmates={crewmates}
               isLoadingCrew={isLoadingCrew}
+              crewCategories={crewCategories}
               nations={nations}
               bendingStyles={bendingStyles}
               onStartEdit={startEditingCrewmateById}

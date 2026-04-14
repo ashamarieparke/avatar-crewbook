@@ -223,6 +223,13 @@
   color: #1d1713;
 }
 
+.field-note {
+  margin: -2px 0 14px;
+  color: #4d453e;
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
 .field-group input {
   width: 100%;
   box-sizing: border-box;
@@ -255,6 +262,10 @@
   gap: 12px;
 }
 
+.button-grid--categories {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .button-grid--stacked {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -285,6 +296,15 @@
   outline: none;
 }
 
+.choice-button:disabled,
+.choice-button:disabled:hover,
+.choice-button:disabled:focus-visible {
+  transform: none;
+  box-shadow: none;
+  opacity: 0.46;
+  cursor: not-allowed;
+}
+
 .choice-button.is-selected {
   border-color: rgba(194, 115, 41, 0.52);
   background: linear-gradient(180deg, rgba(255, 240, 218, 0.95), rgba(255, 250, 243, 0.98));
@@ -308,6 +328,10 @@
 }
 
 .choice-button--stacked {
+  min-height: 92px;
+}
+
+.choice-button--category {
   min-height: 92px;
 }
 

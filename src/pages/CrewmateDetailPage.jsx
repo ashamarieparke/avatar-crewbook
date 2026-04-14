@@ -14,6 +14,7 @@ function formatCreatedAt(value) {
 function CrewmateDetailPage({
   crewmates,
   isLoadingCrew,
+  crewCategories,
   nations,
   bendingStyles,
   onStartEdit,
@@ -32,6 +33,7 @@ function CrewmateDetailPage({
   const crewmate = crewmates.find((entry) => String(entry.id) === String(id))
   const crewmateId = crewmate?.id
   const crewmateBio = crewmate?.bio ?? ''
+  const category = crewCategories.find((entry) => entry.id === crewmate?.category)
 
   useEffect(() => {
     if (!crewmateId) {
@@ -139,6 +141,10 @@ function CrewmateDetailPage({
       </div>
 
       <article className="preview-card detail-card">
+        <p className="preview-detail">
+          <span className="preview-label">Category:</span>
+          {category ? category.label : 'Uncategorized'}
+        </p>
         <p className="preview-detail">
           <span className="preview-label">Nation:</span>
           {nation ? (

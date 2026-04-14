@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 function SummaryPage({
   orderedCrewmates,
   isLoadingCrew,
+  crewCategories,
   nations,
   bendingStyles,
   onStartEdit,
@@ -17,6 +18,7 @@ function SummaryPage({
       {orderedCrewmates.length > 0 ? (
         <div className="crew-grid">
           {orderedCrewmates.map((crewmate) => {
+            const category = crewCategories.find((entry) => entry.id === crewmate.category)
             const nation = nations.find((entry) => entry.id === crewmate.nation)
             const bending = bendingStyles.find(
               (entry) => entry.id === crewmate.bending,
@@ -34,6 +36,7 @@ function SummaryPage({
                 </div>
 
                 <div className="crew-card__stats">
+                  <span>{category ? category.label : 'Uncategorized'}</span>
                   <span>{nation ? nation.label : 'Unknown nation'}</span>
                   <span>{bending ? `Bending Style: ${bending.label}` : 'Unknown bending'}</span>
                 </div>

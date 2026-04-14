@@ -21,8 +21,12 @@ function CharacterPortrait({ name, photo }) {
 function CrewmateFormPage({
   nations,
   bendingStyles,
+  crewCategories,
+  allowedNations,
+  allowedBendingStyles,
   gaangPresets,
   formData,
+  selectedCategory,
   selectedNation,
   selectedBending,
   editingCrewmateId,
@@ -92,13 +96,40 @@ function CrewmateFormPage({
           </label>
 
           <fieldset className="field-group">
+            <legend>Category</legend>
+            <p className="field-note">
+              Pick a category first. It unlocks only the matching nation and bending choices.
+            </p>
+            <div className="button-grid button-grid--categories">
+              {crewCategories.map((category) => (
+                <button
+                  key={category.id}
+                  type="button"
+                  className={`choice-button choice-button--category ${formData.category === category.id ? 'is-selected' : ''}`}
+                  onClick={() => onFieldChange('category', category.id)}
+                >
+                  <span>{category.label}</span>
+                  <small>{category.note}</small>
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className="field-group">
             <legend>Nation</legend>
+            <p className="field-note">
+              {selectedCategory ? `Available for ${selectedCategory.label}.` : 'Choose a category to unlock nation options.'}
+            </p>
             <div className="button-grid">
-              {nations.map((nation) => (
+              {nations.map((nation) => {
+                const isAllowed = allowedNations.some((entry) => entry.id === nation.id)
+
+                return (
                 <button
                   key={nation.id}
                   type="button"
                   className={`choice-button choice-button--${nation.id} ${formData.nation === nation.id ? 'is-selected' : ''}`}
+                  disabled={!selectedCategory || !isAllowed}
                   onClick={() => onFieldChange('nation', nation.id)}
                 >
                   <span className={`choice-symbol choice-symbol--${nation.id}`} aria-hidden="true">
@@ -106,24 +137,33 @@ function CrewmateFormPage({
                   </span>
                   <span>{nation.label}</span>
                 </button>
-              ))}
+                )
+              })}
             </div>
           </fieldset>
 
           <fieldset className="field-group">
             <legend>Bending style</legend>
+            <p className="field-note">
+              {selectedCategory ? `Available for ${selectedCategory.label}.` : 'Choose a category to unlock bending options.'}
+            </p>
             <div className="button-grid button-grid--stacked">
-              {bendingStyles.map((style) => (
+              {bendingStyles.map((style) => {
+                const isAllowed = allowedBendingStyles.some((entry) => entry.id === style.id)
+
+                return (
                 <button
                   key={style.id}
                   type="button"
                   className={`choice-button choice-button--stacked ${formData.bending === style.id ? 'is-selected' : ''}`}
+                  disabled={!selectedCategory || !isAllowed}
                   onClick={() => onFieldChange('bending', style.id)}
                 >
                   <span>{style.label}</span>
                   <small>{style.note}</small>
                 </button>
-              ))}
+                )
+              })}
             </div>
           </fieldset>
 
@@ -131,7 +171,7 @@ function CrewmateFormPage({
             {isSaving
               ? editingCrewmateId
                 ? 'Updating crewmate...'
-                : 'Saving to Supabase...'
+                : 'Saving crewmate...'
               : editingCrewmateId
                 ? 'Update crewmate'
                 : 'Add crewmate'}
@@ -165,6 +205,10 @@ function CrewmateFormPage({
           <article className="preview-card">
             <span className="preview-tag">New recruit</span>
             <h3>{formData.name || 'Unnamed recruit'}</h3>
+            <p className="preview-detail">
+              <span className="preview-label">Category:</span>
+              {selectedCategory ? selectedCategory.label : 'Choose a category'}
+            </p>
             <p className="preview-detail">
               <span className="preview-label">Nation:</span>
               {selectedNation ? (
