@@ -14,7 +14,7 @@ The following **required** functionality is completed:
 - [x] **The web app contains a page that features a create form to add a new crewmate**
   - Users can name the crewmate
   - Users can set the crewmate’s attributes by clicking on one of several values
-- [ ] **The web app includes a summary page of all the user’s added crewmatese**
+- [x] **The web app includes a summary page of all the user’s added crewmatese**
   -  The web app contains a summary page dedicated to displaying all the crewmates the user has made so far
   -  The summary page is sorted by creation date such that the most recently created crewmates appear at the top
 - [ ] **A previously created crewmate can be updated from the list of crewmates in the summary page**
@@ -55,6 +55,8 @@ Here's a walkthrough of implemented user stories:
 ## Notes
 
 Describe any challenges encountered while building the app.
+
+The challenges encountered are connecting the web application to Supabase, 
 
 ## License
 

@@ -124,6 +124,7 @@ function CharacterPortrait({ name, photo }) {
 function App() {
   const [formData, setFormData] = useState(initialFormState)
   const [crewmates, setCrewmates] = useState([])
+  const [activePage, setActivePage] = useState('create')
   const [isLoadingCrew, setIsLoadingCrew] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [formError, setFormError] = useState('')
@@ -226,6 +227,7 @@ function App() {
     ])
 
     setFormData(initialFormState)
+    setActivePage('summary')
     setIsSaving(false)
   }
 
@@ -240,175 +242,200 @@ function App() {
         </p>
       </section>
 
-      <section className="panel presets-panel">
-        <div className="panel-heading">
-          <h2>Preset Inspiration</h2>
-          <p>Tap any Gaang preset to auto-fill the form with API-sourced photos.</p>
-        </div>
-        <div className="preset-grid">
-          {gaangPresets.map((preset) => {
-            const nation = nations.find((entry) => entry.id === preset.nation)
+      <nav className="page-switch" aria-label="Page switcher">
+        <button
+          type="button"
+          className={`page-switch__button ${activePage === 'create' ? 'is-active' : ''}`}
+          onClick={() => setActivePage('create')}
+        >
+          Create
+        </button>
+        <button
+          type="button"
+          className={`page-switch__button ${activePage === 'summary' ? 'is-active' : ''}`}
+          onClick={() => setActivePage('summary')}
+        >
+          Summary
+        </button>
+      </nav>
 
-            return (
-              <button
-                key={preset.name}
-                type="button"
-                className={`preset-card preset-card--${preset.nation}`}
-                onClick={() => applyPreset(preset)}
-              >
-                <span className="preset-photo-wrap">
-                  <CharacterPortrait name={preset.name} photo={preset.photo} />
-                </span>
-                <span className="preset-name">{preset.name}</span>
-                <span className="preset-meta">
-                  {nation ? (
+      {activePage === 'create' ? (
+        <>
+          <section className="panel presets-panel">
+            <div className="panel-heading">
+              <h2>Preset Inspiration</h2>
+              <p>Tap any Gaang preset to auto-fill the form with API-sourced photos.</p>
+            </div>
+            <div className="preset-grid">
+              {gaangPresets.map((preset) => {
+                const nation = nations.find((entry) => entry.id === preset.nation)
+
+                return (
+                  <button
+                    key={preset.name}
+                    type="button"
+                    className={`preset-card preset-card--${preset.nation}`}
+                    onClick={() => applyPreset(preset)}
+                  >
+                    <span className="preset-photo-wrap">
+                      <CharacterPortrait name={preset.name} photo={preset.photo} />
+                    </span>
+                    <span className="preset-name">{preset.name}</span>
+                    <span className="preset-meta">
+                      {nation ? (
+                        <>
+                          <img src={nation.icon} alt="" />
+                          {nation.label}
+                        </>
+                      ) : (
+                        'Unknown nation'
+                      )}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </section>
+
+          <section className="content-grid">
+            <form className="panel form-panel" onSubmit={handleSubmit}>
+              <div className="panel-heading">
+                <h2>Create a crewmate</h2>
+                <p>Build an Avatar-inspired team member for your crew.</p>
+              </div>
+
+              <label className="field-group" htmlFor="crewmate-name">
+                <span>Name</span>
+                <input
+                  id="crewmate-name"
+                  name="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={(event) => updateField('name', event.target.value)}
+                  placeholder="Aang, Katara, Toph..."
+                />
+              </label>
+
+              <fieldset className="field-group">
+                <legend>Nation</legend>
+                <div className="button-grid">
+                  {nations.map((nation) => (
+                    <button
+                      key={nation.id}
+                      type="button"
+                      className={`choice-button choice-button--${nation.id} ${formData.nation === nation.id ? 'is-selected' : ''}`}
+                      onClick={() => updateField('nation', nation.id)}
+                    >
+                      <span className={`choice-symbol choice-symbol--${nation.id}`} aria-hidden="true">
+                        <img src={nation.icon} alt="" />
+                      </span>
+                      <span>{nation.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+
+              <fieldset className="field-group">
+                <legend>Bending style</legend>
+                <div className="button-grid button-grid--stacked">
+                  {bendingStyles.map((style) => (
+                    <button
+                      key={style.id}
+                      type="button"
+                      className={`choice-button choice-button--stacked ${formData.bending === style.id ? 'is-selected' : ''}`}
+                      onClick={() => updateField('bending', style.id)}
+                    >
+                      <span>{style.label}</span>
+                      <small>{style.note}</small>
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+
+              <button className="submit-button" type="submit">
+                {isSaving ? 'Saving to Supabase...' : 'Add crewmate'}
+              </button>
+
+              {formError ? <p className="form-error">{formError}</p> : null}
+            </form>
+
+            <aside className="panel preview-panel">
+              <div className="panel-heading">
+                <h2>Live preview</h2>
+                <p>See the crewmate card update as you make choices.</p>
+              </div>
+
+              <article className="preview-card">
+                <span className="preview-tag">New recruit</span>
+                <h3>{formData.name || 'Unnamed recruit'}</h3>
+                <p className="preview-detail">
+                  <span className="preview-label">Nation:</span>
+                  {selectedNation ? (
                     <>
-                      <img src={nation.icon} alt="" />
-                      {nation.label}
+                      <img
+                        className="preview-nation-icon"
+                        src={selectedNation.icon}
+                        alt=""
+                      />
+                      {selectedNation.label}
                     </>
                   ) : (
-                    'Unknown nation'
+                    'Choose a nation'
                   )}
-                </span>
-              </button>
-            )
-          })}
-        </div>
-      </section>
+                </p>
+                <p className="preview-detail">
+                  <span className="preview-label">Bending Style:</span>
+                  {selectedBending ? selectedBending.label : 'Choose a bending style'}
+                </p>
+              </article>
+            </aside>
+          </section>
+        </>
+      ) : null}
 
-      <section className="content-grid">
-        <form className="panel form-panel" onSubmit={handleSubmit}>
+      {activePage === 'summary' ? (
+        <section className="panel roster-section">
           <div className="panel-heading">
-            <h2>Create a crewmate</h2>
-            <p>Build an Avatar-inspired team member for your crew.</p>
+            <h2>Crew Summary</h2>
+            <p>This page shows all crewmates, newest at the top.</p>
           </div>
 
-          <label className="field-group" htmlFor="crewmate-name">
-            <span>Name</span>
-            <input
-              id="crewmate-name"
-              name="name"
-              type="text"
-              value={formData.name}
-              onChange={(event) => updateField('name', event.target.value)}
-              placeholder="Aang, Katara, Toph..."
-            />
-          </label>
-
-          <fieldset className="field-group">
-            <legend>Nation</legend>
-            <div className="button-grid">
-              {nations.map((nation) => (
-                <button
-                  key={nation.id}
-                  type="button"
-                  className={`choice-button choice-button--${nation.id} ${formData.nation === nation.id ? 'is-selected' : ''}`}
-                  onClick={() => updateField('nation', nation.id)}
-                >
-                  <span className={`choice-symbol choice-symbol--${nation.id}`} aria-hidden="true">
-                    <img src={nation.icon} alt="" />
-                  </span>
-                  <span>{nation.label}</span>
-                </button>
-              ))}
-            </div>
-          </fieldset>
-
-          <fieldset className="field-group">
-            <legend>Bending style</legend>
-            <div className="button-grid button-grid--stacked">
-              {bendingStyles.map((style) => (
-                <button
-                  key={style.id}
-                  type="button"
-                  className={`choice-button choice-button--stacked ${formData.bending === style.id ? 'is-selected' : ''}`}
-                  onClick={() => updateField('bending', style.id)}
-                >
-                  <span>{style.label}</span>
-                  <small>{style.note}</small>
-                </button>
-              ))}
-            </div>
-          </fieldset>
-
-          <button className="submit-button" type="submit">
-            {isSaving ? 'Saving to Supabase...' : 'Add crewmate'}
-          </button>
-
-          {formError ? <p className="form-error">{formError}</p> : null}
-        </form>
-
-        <aside className="panel preview-panel">
-          <div className="panel-heading">
-            <h2>Live preview</h2>
-            <p>See the crewmate card update as you make choices.</p>
-          </div>
-
-          <article className="preview-card">
-            <span className="preview-tag">New recruit</span>
-            <h3>{formData.name || 'Unnamed recruit'}</h3>
-            <p className="preview-detail">
-              {selectedNation
-                ? (
-                  <>
-                    <img
-                      className="preview-nation-icon"
-                      src={selectedNation.icon}
-                      alt=""
-                    />
-                    {selectedNation.label}
-                  </>
+          {orderedCrewmates.length > 0 ? (
+            <div className="crew-grid">
+              {orderedCrewmates.map((crewmate) => {
+                const nation = nations.find((entry) => entry.id === crewmate.nation)
+                const bending = bendingStyles.find(
+                  (entry) => entry.id === crewmate.bending,
                 )
-                : 'Choose a nation'}
-            </p>
-            <p className="preview-detail">
-              {selectedBending ? selectedBending.label : 'Choose a bending style'}
-            </p>
-          </article>
-        </aside>
-      </section>
 
-      <section className="roster-section">
-        <div className="panel-heading">
-          <h2>Recently forged crew</h2>
-          <p>The newest crewmates appear first.</p>
-        </div>
+                return (
+                  <article className="crew-card" key={crewmate.id}>
+                    <div>
+                      <p className="crew-card__label">Crewmate</p>
+                      <h3>{crewmate.name}</h3>
+                    </div>
 
-        {orderedCrewmates.length > 0 ? (
-          <div className="crew-grid">
-            {orderedCrewmates.map((crewmate) => {
-              const nation = nations.find((entry) => entry.id === crewmate.nation)
-              const bending = bendingStyles.find(
-                (entry) => entry.id === crewmate.bending,
-              )
-
-              return (
-                <article className="crew-card" key={crewmate.id}>
-                  <div>
-                    <p className="crew-card__label">Crewmate</p>
-                    <h3>{crewmate.name}</h3>
-                  </div>
-
-                  <div className="crew-card__stats">
-                    <span>{nation ? nation.label : 'Unknown nation'}</span>
-                    <span>{bending ? bending.label : 'Unknown bending'}</span>
-                  </div>
-                </article>
-              )
-            })}
-          </div>
-        ) : isLoadingCrew ? (
-          <article className="empty-state">
-            <h3>Loading crew...</h3>
-            <p>Fetching your crewmates from Supabase.</p>
-          </article>
-        ) : (
-          <article className="empty-state">
-            <h3>No crewmates yet</h3>
-            <p>Use the form above to add your first Avatar-themed crewmate.</p>
-          </article>
-        )}
-      </section>
+                    <div className="crew-card__stats">
+                      <span>{nation ? nation.label : 'Unknown nation'}</span>
+                      <span>{bending ? `Bending Style: ${bending.label}` : 'Unknown bending'}</span>
+                    </div>
+                  </article>
+                )
+              })}
+            </div>
+          ) : isLoadingCrew ? (
+            <article className="empty-state">
+              <h3>Loading crew...</h3>
+              <p>Fetching your crewmates from Supabase.</p>
+            </article>
+          ) : (
+            <article className="empty-state">
+              <h3>No crewmates yet</h3>
+              <p>Go back to Create and add your first Avatar-themed crewmate.</p>
+            </article>
+          )}
+        </section>
+      ) : null}
     </main>
   )
 }

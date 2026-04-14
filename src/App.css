@@ -51,6 +51,28 @@
   color: rgba(17, 24, 39, 0.88);
 }
 
+.page-switch {
+  margin-top: 10px;
+  display: inline-flex;
+  gap: 10px;
+}
+
+.page-switch__button {
+  border: 1px solid rgba(33, 52, 75, 0.2);
+  background: rgba(255, 255, 255, 0.88);
+  color: #1f2a3a;
+  border-radius: 999px;
+  padding: 10px 16px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.page-switch__button.is-active {
+  border-color: rgba(181, 77, 27, 0.5);
+  background: rgba(248, 226, 199, 0.9);
+}
+
 .panel {
   background: rgba(255, 252, 247, 0.97);
   border: 1px solid rgba(33, 52, 75, 0.1);
@@ -379,11 +401,17 @@
 }
 
 .preview-detail {
-  display: inline-flex;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   margin-top: 10px;
   color: #332e29;
+}
+
+.preview-label {
+  font-weight: 700;
+  color: #1d1713;
 }
 
 .preview-nation-icon {
