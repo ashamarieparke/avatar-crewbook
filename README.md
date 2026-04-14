@@ -1,8 +1,8 @@
-# Web Development Project 7 - *Name of App Here*
+# Web Development Project 7 - *The Gaange Builder*
 
 Submitted by: **Ashamarie Parke**
 
-This web app: **insert description**
+This web app: **an Avatar: The Last Airbender themed crewmate forge where users can create a new crewmate by naming them and choosing their nation and bending style through clickable options**
 
 Time spent: **X** hours spent in total
 
@@ -11,7 +11,7 @@ Time spent: **X** hours spent in total
 The following **required** functionality is completed:
 
 
-- [ ] **The web app contains a page that features a create form to add a new crewmate**
+- [x] **The web app contains a page that features a create form to add a new crewmate**
   - Users can name the crewmate
   - Users can set the crewmate’s attributes by clicking on one of several values
 - [ ] **The web app includes a summary page of all the user’s added crewmatese**
