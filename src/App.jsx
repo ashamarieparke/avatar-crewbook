@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './App.css'
+import { isSupabaseConfigured, supabase } from './client'
 
 const nations = [
   {
@@ -37,6 +38,18 @@ const initialFormState = {
   nation: '',
   bending: '',
 }
+
+const CREWMATES_TABLE = 'crewmates'
+
+const normalizeCrewmate = (row) => ({
+  id: row.id ?? crypto.randomUUID(),
+  name: row.name ?? 'Unnamed recruit',
+  nation: row.nation ?? '',
+  bending: row.bending ?? '',
+  createdAt: row.created_at ?? row.createdAt ?? new Date().toISOString(),
+})
+
+const getSortTime = (value) => new Date(value).getTime() || 0
 
 const gaangPresets = [
   {
@@ -111,6 +124,9 @@ function CharacterPortrait({ name, photo }) {
 function App() {
   const [formData, setFormData] = useState(initialFormState)
   const [crewmates, setCrewmates] = useState([])
+  const [isLoadingCrew, setIsLoadingCrew] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [formError, setFormError] = useState('')
 
   const selectedNation = nations.find((nation) => nation.id === formData.nation)
   const selectedBending = bendingStyles.find(
@@ -118,9 +134,41 @@ function App() {
   )
 
   const orderedCrewmates = useMemo(
-    () => [...crewmates].sort((left, right) => right.createdAt - left.createdAt),
+    () =>
+      [...crewmates].sort(
+        (left, right) =>
+          getSortTime(right.createdAt) - getSortTime(left.createdAt),
+      ),
     [crewmates],
   )
+
+  useEffect(() => {
+    const loadCrewmates = async () => {
+      if (!isSupabaseConfigured || !supabase) {
+        setIsLoadingCrew(false)
+        setFormError(
+          'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_API_KEY (or VITE_SUPABASE_ANON_KEY) in your .env file.',
+        )
+        return
+      }
+
+      const { data, error } = await supabase
+        .from(CREWMATES_TABLE)
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        setFormError(error.message)
+        setIsLoadingCrew(false)
+        return
+      }
+
+      setCrewmates((data ?? []).map(normalizeCrewmate))
+      setIsLoadingCrew(false)
+    }
+
+    loadCrewmates()
+  }, [])
 
   const updateField = (field, value) => {
     setFormData((current) => ({
@@ -137,25 +185,48 @@ function App() {
     })
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
 
     if (!formData.name || !formData.nation || !formData.bending) {
       return
     }
 
+    if (!isSupabaseConfigured || !supabase) {
+      setFormError(
+        'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_API_KEY (or VITE_SUPABASE_ANON_KEY) in your .env file.',
+      )
+      return
+    }
+
+    setIsSaving(true)
+    setFormError('')
+
+    const payload = {
+      name: formData.name.trim(),
+      nation: formData.nation,
+      bending: formData.bending,
+    }
+
+    const { data, error } = await supabase
+      .from(CREWMATES_TABLE)
+      .insert(payload)
+      .select()
+      .single()
+
+    if (error) {
+      setFormError(error.message)
+      setIsSaving(false)
+      return
+    }
+
     setCrewmates((current) => [
-      {
-        id: crypto.randomUUID(),
-        name: formData.name.trim(),
-        nation: formData.nation,
-        bending: formData.bending,
-        createdAt: Date.now(),
-      },
+      normalizeCrewmate(data),
       ...current,
     ])
 
     setFormData(initialFormState)
+    setIsSaving(false)
   }
 
   return (
@@ -261,8 +332,10 @@ function App() {
           </fieldset>
 
           <button className="submit-button" type="submit">
-            Add crewmate
+            {isSaving ? 'Saving to Supabase...' : 'Add crewmate'}
           </button>
+
+          {formError ? <p className="form-error">{formError}</p> : null}
         </form>
 
         <aside className="panel preview-panel">
@@ -324,6 +397,11 @@ function App() {
               )
             })}
           </div>
+        ) : isLoadingCrew ? (
+          <article className="empty-state">
+            <h3>Loading crew...</h3>
+            <p>Fetching your crewmates from Supabase.</p>
+          </article>
         ) : (
           <article className="empty-state">
             <h3>No crewmates yet</h3>

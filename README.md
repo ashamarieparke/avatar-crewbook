@@ -1,4 +1,4 @@
-# Web Development Project 7 - *The Gaange Builder*
+# Web Development Project 7 - *The Gaang Builder*
 
 Submitted by: **Ashamarie Parke**
 

@@ -189,6 +189,10 @@
   text-align: left;
 }
 
+.form-panel label.field-group {
+  margin-bottom: 44px;
+}
+
 .field-group legend,
 .field-group span {
   display: inline-block;
@@ -290,12 +294,13 @@
 }
 
 .choice-symbol {
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
+  width: auto;
+  height: auto;
+  border-radius: 0;
   display: inline-grid;
   place-items: center;
-  border: 1px solid transparent;
+  border: 0;
+  background: transparent;
   font-size: 1.1rem;
 }
 
@@ -306,23 +311,19 @@
 }
 
 .choice-symbol--air {
-  background: rgba(171, 213, 245, 0.35);
-  border-color: rgba(70, 143, 210, 0.35);
+  background: transparent;
 }
 
 .choice-symbol--water {
-  background: rgba(171, 196, 245, 0.36);
-  border-color: rgba(74, 128, 213, 0.36);
+  background: transparent;
 }
 
 .choice-symbol--earth {
-  background: rgba(173, 211, 157, 0.34);
-  border-color: rgba(85, 136, 74, 0.4);
+  background: transparent;
 }
 
 .choice-symbol--fire {
-  background: rgba(244, 176, 160, 0.34);
-  border-color: rgba(189, 70, 50, 0.38);
+  background: transparent;
 }
 
 .submit-button {
