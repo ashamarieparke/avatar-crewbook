@@ -32,13 +32,14 @@ function CrewmateFormPage({
   onFieldChange,
   onSubmit,
   onResetForm,
+  onDeleteCrewmate,
 }) {
   return (
     <>
       <section className="panel presets-panel">
         <div className="panel-heading">
           <h2>Preset Inspiration</h2>
-          <p>Tap any Gaang preset to auto-fill the form with API-sourced photos.</p>
+          <p>Tap any Gaang preset to auto-fill the form.</p>
         </div>
         <div className="preset-grid">
           {gaangPresets.map((preset) => {
@@ -139,6 +140,16 @@ function CrewmateFormPage({
           {editingCrewmateId ? (
             <button className="secondary-button" type="button" onClick={onResetForm}>
               Cancel Edit
+            </button>
+          ) : null}
+
+          {editingCrewmateId ? (
+            <button
+              className="destructive-button"
+              type="button"
+              onClick={onDeleteCrewmate}
+            >
+              Delete crewmate
             </button>
           ) : null}
 

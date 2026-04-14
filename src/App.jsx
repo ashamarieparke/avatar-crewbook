@@ -94,13 +94,6 @@ const gaangPresets = [
       'https://vignette.wikia.nocookie.net/avatar/images/4/4b/Zuko.png/revision/latest?cb=20180630112142',
   },
   {
-    name: 'Iroh',
-    nation: 'fire',
-    bending: 'fire',
-    photo:
-      'https://vignette.wikia.nocookie.net/avatar/images/c/c1/Iroh_smiling.png/revision/latest?cb=20130626131914',
-  },
-  {
     name: 'Suki',
     nation: 'earth',
     bending: 'nonbender',
@@ -137,7 +130,7 @@ function App() {
       if (!isSupabaseConfigured || !supabase) {
         setIsLoadingCrew(false)
         setFormError(
-          'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_API_KEY (or VITE_SUPABASE_ANON_KEY) in your .env file.',
+          'We couldn’t save that crewmate right now. Please try again.',
         )
         return
       }
@@ -192,6 +185,46 @@ function App() {
     setFormError('')
   }
 
+  const handleDeleteCrewmate = async () => {
+    if (!editingCrewmateId) {
+      return
+    }
+
+    if (!isSupabaseConfigured || !supabase) {
+      setFormError(
+        'We couldn’t save that crewmate right now. Please try again.',
+      )
+      return
+    }
+
+    setIsSaving(true)
+    setFormError('')
+
+    const { error } = await supabase
+      .from(CREWMATES_TABLE)
+      .delete()
+      .eq('id', editingCrewmateId)
+
+    if (error) {
+      const isDeleteRlsIssue = /row-level security|permission denied/i.test(error.message)
+
+      setFormError(
+        isDeleteRlsIssue
+          ? 'Deleting that crewmate didn’t work. Please try again.'
+          : error.message,
+      )
+      setIsSaving(false)
+      return
+    }
+
+    setCrewmates((current) =>
+      current.filter((crewmate) => crewmate.id !== editingCrewmateId),
+    )
+    resetForm()
+    setActivePage('summary')
+    setIsSaving(false)
+  }
+
   const handleSubmit = async (event) => {
     event.preventDefault()
 
@@ -201,7 +234,7 @@ function App() {
 
     if (!isSupabaseConfigured || !supabase) {
       setFormError(
-        'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_API_KEY (or VITE_SUPABASE_ANON_KEY) in your .env file.',
+        'We couldn’t save that crewmate right now. Please check your configuration and try again.',
       )
       return
     }
@@ -234,7 +267,7 @@ function App() {
 
       setFormError(
         isUpdateRlsIssue
-          ? 'Update blocked by Supabase RLS policy. Add an UPDATE policy for anon/authenticated users on the crewmates table.'
+          ? 'That crewmate could not be updated. Check your connection or permissions.'
           : error.message,
       )
       setIsSaving(false)
@@ -245,7 +278,7 @@ function App() {
 
     if (editingCrewmateId && returnedRows.length === 0) {
       setFormError(
-        'No row was updated. Verify the crewmate id exists and that your Supabase UPDATE policy allows this operation.',
+        'That crewmate could not be updated. Check your connection or permissions.',
       )
       setIsSaving(false)
       return
@@ -280,7 +313,7 @@ function App() {
         <h1>The Gaang Builder</h1>
         <p className="hero-copy">
           Start from a preset hero or create your own. Choose each recruit's
-          nation and bending path with clickable attribute symbols.
+          nation and bending path with clickable nation symbols.
         </p>
       </section>
 
@@ -316,6 +349,7 @@ function App() {
           onFieldChange={updateField}
           onSubmit={handleSubmit}
           onResetForm={resetForm}
+          onDeleteCrewmate={handleDeleteCrewmate}
         />
       ) : null}
 

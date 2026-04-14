@@ -393,10 +393,25 @@
   align-self: start;
 }
 
+.destructive-button {
+  width: 100%;
+  margin-top: 10px;
+  border: 1px solid rgba(173, 56, 39, 0.24);
+  border-radius: 16px;
+  background: rgba(255, 236, 232, 0.95);
+  color: #8d2d21;
+  font: inherit;
+  font-weight: 700;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
 .secondary-button:hover,
 .secondary-button:focus-visible,
 .edit-button:hover,
-.edit-button:focus-visible {
+.edit-button:focus-visible,
+.destructive-button:hover,
+.destructive-button:focus-visible {
   border-color: rgba(181, 77, 27, 0.4);
   background: rgba(248, 226, 199, 0.9);
   outline: none;
