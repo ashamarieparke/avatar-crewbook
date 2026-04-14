@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 function SummaryPage({
   orderedCrewmates,
   isLoadingCrew,
@@ -24,7 +26,11 @@ function SummaryPage({
               <article className="crew-card" key={crewmate.id}>
                 <div>
                   <p className="crew-card__label">Crewmate</p>
-                  <h3>{crewmate.name}</h3>
+                  <h3>
+                    <Link className="crewmate-link" to={`/crewmate/${crewmate.id}`}>
+                      {crewmate.name}
+                    </Link>
+                  </h3>
                 </div>
 
                 <div className="crew-card__stats">
@@ -32,13 +38,18 @@ function SummaryPage({
                   <span>{bending ? `Bending Style: ${bending.label}` : 'Unknown bending'}</span>
                 </div>
 
-                <button
-                  type="button"
-                  className="edit-button"
-                  onClick={() => onStartEdit(crewmate)}
-                >
-                  Edit
-                </button>
+                <div className="crew-card__actions">
+                  <Link className="edit-button" to={`/crewmate/${crewmate.id}`}>
+                    View Details
+                  </Link>
+                  <button
+                    type="button"
+                    className="edit-button"
+                    onClick={() => onStartEdit(crewmate)}
+                  >
+                    Edit
+                  </button>
+                </div>
               </article>
             )
           })}
@@ -46,7 +57,7 @@ function SummaryPage({
       ) : isLoadingCrew ? (
         <article className="empty-state">
           <h3>Loading crew...</h3>
-          <p>Fetching your crewmates from Supabase.</p>
+          <p>Fetching your crewmates.</p>
         </article>
       ) : (
         <article className="empty-state">

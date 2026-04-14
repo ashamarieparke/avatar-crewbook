@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Navigate, NavLink, Route, Routes, useNavigate } from 'react-router-dom'
 import './App.css'
 import { isSupabaseConfigured, supabase } from './client'
 import CrewmateFormPage from './pages/CrewmateFormPage'
 import SummaryPage from './pages/SummaryPage'
+import CrewmateDetailPage from './pages/CrewmateDetailPage'
 import airNationIcon from './assets/nations/air.png'
 import waterNationIcon from './assets/nations/water.png'
 import earthNationIcon from './assets/nations/earth.png'
@@ -52,6 +54,7 @@ const normalizeCrewmate = (row) => ({
   name: row.name ?? 'Unnamed recruit',
   nation: row.nation ?? '',
   bending: row.bending ?? '',
+  bio: row.bio ?? '',
   createdAt: row.created_at ?? row.createdAt ?? new Date().toISOString(),
 })
 
@@ -103,9 +106,9 @@ const gaangPresets = [
 ]
 
 function App() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState(initialFormState)
   const [crewmates, setCrewmates] = useState([])
-  const [activePage, setActivePage] = useState('create')
   const [editingCrewmateId, setEditingCrewmateId] = useState(null)
   const [isLoadingCrew, setIsLoadingCrew] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -176,7 +179,20 @@ function App() {
     })
     setEditingCrewmateId(crewmate.id)
     setFormError('')
-    setActivePage('create')
+    navigate('/create')
+  }
+
+  const startEditingCrewmateById = (crewmateId) => {
+    const foundCrewmate = crewmates.find(
+      (crewmate) => String(crewmate.id) === String(crewmateId),
+    )
+
+    if (!foundCrewmate) {
+      setFormError('That crewmate could not be found.')
+      return
+    }
+
+    startEditingCrewmate(foundCrewmate)
   }
 
   const resetForm = () => {
@@ -221,8 +237,46 @@ function App() {
       current.filter((crewmate) => crewmate.id !== editingCrewmateId),
     )
     resetForm()
-    setActivePage('summary')
+    navigate('/summary')
     setIsSaving(false)
+  }
+
+  const handleSaveBio = async (crewmateId, bio) => {
+    if (!isSupabaseConfigured || !supabase) {
+      throw new Error(
+        'We couldn’t save that bio right now. Please check your configuration and try again.',
+      )
+    }
+
+    const { data, error } = await supabase
+      .from(CREWMATES_TABLE)
+      .update({ bio })
+      .eq('id', crewmateId)
+      .select('*')
+
+    if (error) {
+      const isUpdateRlsIssue = /row-level security|permission denied/i.test(error.message)
+
+      throw new Error(
+        isUpdateRlsIssue
+          ? 'That bio could not be saved. Check your permissions and try again.'
+          : error.message,
+      )
+    }
+
+    const updatedCrewmate = Array.isArray(data) ? data[0] : data
+
+    if (!updatedCrewmate) {
+      throw new Error('That bio could not be saved. Please try again.')
+    }
+
+    setCrewmates((current) =>
+      current.map((crewmate) =>
+        String(crewmate.id) === String(crewmateId)
+          ? normalizeCrewmate(updatedCrewmate)
+          : crewmate,
+      ),
+    )
   }
 
   const handleSubmit = async (event) => {
@@ -302,7 +356,7 @@ function App() {
     })
 
     resetForm()
-    setActivePage('summary')
+    navigate('/summary')
     setIsSaving(false)
   }
 
@@ -318,50 +372,74 @@ function App() {
       </section>
 
       <nav className="page-switch" aria-label="Page switcher">
-        <button
-          type="button"
-          className={`page-switch__button ${activePage === 'create' ? 'is-active' : ''}`}
-          onClick={() => setActivePage('create')}
+        <NavLink
+          to="/create"
+          className={({ isActive }) =>
+            `page-switch__button ${isActive ? 'is-active' : ''}`
+          }
         >
           Create
-        </button>
-        <button
-          type="button"
-          className={`page-switch__button ${activePage === 'summary' ? 'is-active' : ''}`}
-          onClick={() => setActivePage('summary')}
+        </NavLink>
+        <NavLink
+          to="/summary"
+          className={({ isActive }) =>
+            `page-switch__button ${isActive ? 'is-active' : ''}`
+          }
         >
           Summary
-        </button>
+        </NavLink>
       </nav>
 
-      {activePage === 'create' ? (
-        <CrewmateFormPage
-          nations={nations}
-          bendingStyles={bendingStyles}
-          gaangPresets={gaangPresets}
-          formData={formData}
-          selectedNation={selectedNation}
-          selectedBending={selectedBending}
-          editingCrewmateId={editingCrewmateId}
-          isSaving={isSaving}
-          formError={formError}
-          onApplyPreset={applyPreset}
-          onFieldChange={updateField}
-          onSubmit={handleSubmit}
-          onResetForm={resetForm}
-          onDeleteCrewmate={handleDeleteCrewmate}
+      <Routes>
+        <Route path="/" element={<Navigate to="/create" replace />} />
+        <Route
+          path="/create"
+          element={
+            <CrewmateFormPage
+              nations={nations}
+              bendingStyles={bendingStyles}
+              gaangPresets={gaangPresets}
+              formData={formData}
+              selectedNation={selectedNation}
+              selectedBending={selectedBending}
+              editingCrewmateId={editingCrewmateId}
+              isSaving={isSaving}
+              formError={formError}
+              onApplyPreset={applyPreset}
+              onFieldChange={updateField}
+              onSubmit={handleSubmit}
+              onResetForm={resetForm}
+              onDeleteCrewmate={handleDeleteCrewmate}
+            />
+          }
         />
-      ) : null}
-
-      {activePage === 'summary' ? (
-        <SummaryPage
-          orderedCrewmates={orderedCrewmates}
-          isLoadingCrew={isLoadingCrew}
-          nations={nations}
-          bendingStyles={bendingStyles}
-          onStartEdit={startEditingCrewmate}
+        <Route
+          path="/summary"
+          element={
+            <SummaryPage
+              orderedCrewmates={orderedCrewmates}
+              isLoadingCrew={isLoadingCrew}
+              nations={nations}
+              bendingStyles={bendingStyles}
+              onStartEdit={startEditingCrewmate}
+            />
+          }
         />
-      ) : null}
+        <Route
+          path="/crewmate/:id"
+          element={
+            <CrewmateDetailPage
+              crewmates={crewmates}
+              isLoadingCrew={isLoadingCrew}
+              nations={nations}
+              bendingStyles={bendingStyles}
+              onStartEdit={startEditingCrewmateById}
+              onSaveBio={handleSaveBio}
+            />
+          }
+        />
+        <Route path="*" element={<Navigate to="/create" replace />} />
+      </Routes>
     </main>
   )
 }

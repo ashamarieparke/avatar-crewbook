@@ -487,6 +487,17 @@
   text-align: left;
 }
 
+.crewmate-link {
+  color: #111827;
+  text-decoration: none;
+}
+
+.crewmate-link:hover,
+.crewmate-link:focus-visible {
+  color: #b54d1b;
+  text-decoration: underline;
+}
+
 .crew-card__stats {
   display: flex;
   flex-wrap: wrap;
@@ -502,6 +513,47 @@
   background: rgba(20, 76, 96, 0.08);
   color: var(--text-h);
   font-size: 0.92rem;
+}
+
+.crew-card__actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.detail-page {
+  margin-top: 20px;
+}
+
+.detail-card {
+  margin-top: 8px;
+}
+
+.detail-back {
+  width: auto;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bio-input {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 14px;
+  border: 1px solid rgba(33, 52, 75, 0.18);
+  background: #fffdf8;
+  padding: 12px 14px;
+  min-height: 120px;
+  font: inherit;
+  color: #1d1713;
+  margin-top: 10px;
+  resize: vertical;
+}
+
+.detail-save {
+  margin-top: 10px;
 }
 
 .empty-state {
