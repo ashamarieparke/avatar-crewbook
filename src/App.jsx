@@ -310,7 +310,7 @@ function App() {
   const handleSaveBio = async (crewmateId, bio) => {
     if (!isSupabaseConfigured || !supabase) {
       throw new Error(
-        'We couldn’t save that bio right now. Please check your configuration and try again.',
+        'We couldn’t save that bio right now. Please try again.',
       )
     }
 
@@ -355,7 +355,7 @@ function App() {
 
     if (!isSupabaseConfigured || !supabase) {
       setFormError(
-        'We couldn’t save that crewmate right now. Please check your configuration and try again.',
+        'We couldn’t save that crewmate right now. Please try again.',
       )
       return
     }

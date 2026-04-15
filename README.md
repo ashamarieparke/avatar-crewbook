@@ -31,7 +31,7 @@ The following **required** functionality is completed:
 
 The following **optional** features are implemented:
 
-- [ ] A crewmate can be given a category upon creation which restricts their attribute value options
+- [x] A crewmate can be given a category upon creation which restricts their attribute value options
   - e.g., a Dungeons and Dragons class or a development team role (project manager, product owner, etc.)
   - User can choose a `category` option to describe their crewmate before any attributes are specified
   - Based on the category value, users are allowed to access only a subset of the possible attributes

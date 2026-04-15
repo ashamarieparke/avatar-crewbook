@@ -207,12 +207,13 @@
 .field-group {
   border: 0;
   padding: 0;
-  margin: 0 0 20px;
+  margin: 0 0 28px;
   text-align: left;
 }
 
 .form-panel label.field-group {
-  margin-bottom: 44px;
+  display: block;
+  margin-bottom: 52px;
 }
 
 .field-group legend,
@@ -506,6 +507,102 @@
   gap: 14px;
 }
 
+.crew-stats-panel {
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(255, 248, 236, 0.98), rgba(255, 244, 226, 0.98));
+  border: 1px solid rgba(33, 52, 75, 0.12);
+}
+
+.crew-stats__intro h3 {
+  margin: 0;
+}
+
+.crew-stats__intro p {
+  margin: 8px 0 0;
+  color: #4a433d;
+  line-height: 1.55;
+}
+
+.crew-stats__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.crew-stat {
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(33, 52, 75, 0.08);
+}
+
+.crew-stat span,
+.crew-stat small {
+  display: block;
+}
+
+.crew-stat span {
+  font-size: 0.86rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #9b5621;
+}
+
+.crew-stat strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+.crew-stat small {
+  margin-top: 6px;
+  color: #4a433d;
+  line-height: 1.45;
+}
+
+.crew-stats-breakdown {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.crew-stats-row {
+  display: grid;
+  gap: 8px;
+}
+
+.crew-stats-row__label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 700;
+  color: #1d1713;
+}
+
+.crew-stats-row__bar {
+  height: 10px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(20, 76, 96, 0.12);
+}
+
+.crew-stats-row__bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #d86e1f, #4a86c8);
+}
+
+.crew-stats__footer {
+  margin: 16px 0 0;
+  color: #4a433d;
+  line-height: 1.55;
+}
+
 .crew-card {
   padding: 20px;
   text-align: left;
@@ -601,6 +698,10 @@
   .preview-panel,
   .roster-section {
     padding: 22px;
+  }
+
+  .crew-stats__grid {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -1,6 +1,149 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+const NATION_TITLES = {
+  air: 'Air Nomad',
+  water: 'Water Tribe',
+  earth: 'Earth Kingdom',
+  fire: 'Fire Nation',
+}
+
+const CATEGORY_ROLES = {
+  leader: 'squad captain',
+  guardian: 'frontline guardian',
+  strategist: 'field strategist',
+  scout: 'recon scout',
+}
+
+const SHOW_CONNECTIONS = {
+  air: {
+    allies: ['Air Acolytes', 'Monk Gyatso\'s old temple caretakers', 'Team Avatar'],
+    enemies: ['Fire Nation occupation troops', 'Yuyan archers', 'Ozai loyalists'],
+  },
+  water: {
+    allies: ['Northern Water Tribe healers', 'Southern Water Tribe warriors', 'Team Avatar'],
+    enemies: ['Fire Nation raiding fleets', 'Hama\'s imitators', 'pirate raiders'],
+  },
+  earth: {
+    allies: ['Kyoshi Warriors', 'Omashu resistance couriers', 'Order of the White Lotus'],
+    enemies: ['Dai Li agents', 'Fire Nation drill battalions', 'rough rhino mercenaries'],
+  },
+  fire: {
+    allies: ['Fire Nation reformists', 'Order of the White Lotus', 'Team Avatar'],
+    enemies: ['Azula\'s loyal enforcers', 'war ministry hardliners', 'Agni Kai extremists'],
+  },
+  unknown: {
+    allies: ['Team Avatar', 'Order of the White Lotus', 'Kyoshi Warriors'],
+    enemies: ['Fire Nation warlords', 'Dai Li remnants', 'rogue bounty hunters'],
+  },
+}
+
+const CATEGORY_CONNECTIONS = {
+  leader: {
+    allies: ['village council envoys', 'frontline captains'],
+    enemies: ['enemy commanders', 'occupation governors'],
+  },
+  guardian: {
+    allies: ['town watch units', 'traveling healers'],
+    enemies: ['siege crews', 'highway bandits'],
+  },
+  strategist: {
+    allies: ['scout messengers', 'mapmakers and logisticians'],
+    enemies: ['spy rings', 'double agents'],
+  },
+  scout: {
+    allies: ['falconry couriers', 'border outriders'],
+    enemies: ['ambush hunters', 'tracking hounds'],
+  },
+}
+
+const BENDING_STYLES = {
+  air: {
+    trait: 'swift, evasive footwork',
+    enemy: 'combustion outpost scouts',
+  },
+  water: {
+    trait: 'adaptive forms and defensive control',
+    enemy: 'raiders threatening river villages',
+  },
+  earth: {
+    trait: 'rooted stances and precise strikes',
+    enemy: 'drill crews pushing into border towns',
+  },
+  fire: {
+    trait: 'aggressive bursts and relentless pressure',
+    enemy: 'elite duelists loyal to a rival commander',
+  },
+  nonbender: {
+    trait: 'tactical timing and engineered gadgets',
+    enemy: 'smuggling rings exploiting war shortages',
+  },
+}
+
+function mergeUniqueLists(...lists) {
+  const seen = new Set()
+  const merged = []
+
+  lists.flat().forEach((item) => {
+    if (!item || typeof item !== 'string') {
+      return
+    }
+
+    const key = item.trim().toLowerCase()
+
+    if (!key || seen.has(key)) {
+      return
+    }
+
+    seen.add(key)
+    merged.push(item.trim())
+  })
+
+  return merged
+}
+
+function getShowConnections(nationId, categoryId) {
+  const nationConnections = SHOW_CONNECTIONS[nationId] ?? SHOW_CONNECTIONS.unknown
+  const categoryConnections = CATEGORY_CONNECTIONS[categoryId] ?? {
+    allies: [],
+    enemies: [],
+  }
+
+  return {
+    allies: mergeUniqueLists(nationConnections.allies, categoryConnections.allies),
+    enemies: mergeUniqueLists(nationConnections.enemies, categoryConnections.enemies),
+  }
+}
+
+function buildOriginalLore({ crewmate, nation, bending, category }) {
+  const firstName = crewmate.name.split(' ')[0]
+  const nationTitle = nation ? NATION_TITLES[nation.id] : 'Four Nations'
+  const role = category ? CATEGORY_ROLES[category.id] : 'independent specialist'
+  const style = bending ? BENDING_STYLES[bending.id] : BENDING_STYLES.nonbender
+  const showConnections = getShowConnections(nation?.id, category?.id)
+
+  return {
+    affiliation: `${nationTitle} Watch`,
+    allies: mergeUniqueLists(
+      [
+        `${firstName}'s patrol unit`,
+        `${nationTitle} healers and messengers`,
+        'traveling merchants who share route intel',
+      ],
+      showConnections.allies,
+    ),
+    enemies: mergeUniqueLists(
+      [
+        style.enemy,
+        'rogue bounty hunters targeting supply convoys',
+        'bandits disrupting village safe zones',
+      ],
+      showConnections.enemies,
+    ),
+    background: `${crewmate.name} serves as a ${role}, known for ${style.trait}. Their missions focus on keeping nearby settlements safe while tensions rise across the nations.`,
+  }
+}
+
 function formatCreatedAt(value) {
   const date = new Date(value)
 
@@ -67,7 +210,7 @@ function CrewmateDetailPage({
         const exactMatch = data.find(
           (entry) => entry?.name?.toLowerCase() === crewmate.name.toLowerCase(),
         )
-        const picked = exactMatch ?? data[0] ?? null
+        const picked = exactMatch ?? null
 
         if (!isCancelled) {
           setApiDetails({ loading: false, error: '', character: picked })
@@ -133,6 +276,21 @@ function CrewmateDetailPage({
 
   const nation = nations.find((entry) => entry.id === crewmate.nation)
   const bending = bendingStyles.find((entry) => entry.id === crewmate.bending)
+  const showConnections = getShowConnections(nation?.id, category?.id)
+  const canonAllies = mergeUniqueLists(
+    apiDetails.character?.allies ?? [],
+    showConnections.allies,
+  )
+  const canonEnemies = mergeUniqueLists(
+    apiDetails.character?.enemies ?? [],
+    showConnections.enemies,
+  )
+  const generatedLore = buildOriginalLore({
+    crewmate,
+    nation,
+    bending,
+    category,
+  })
 
   return (
     <section className="panel roster-section detail-page">
@@ -173,20 +331,47 @@ function CrewmateDetailPage({
         {apiDetails.character ? (
           <>
             <p className="preview-detail">
+              <span className="preview-label">Canon Profile:</span>
+              Found in Avatar show records.
+            </p>
+            <p className="preview-detail">
               <span className="preview-label">Affiliation:</span>
               {apiDetails.character.affiliation || 'Unknown'}
             </p>
             <p className="preview-detail">
               <span className="preview-label">Allies:</span>
-              {apiDetails.character.allies?.length
-                ? apiDetails.character.allies.slice(0, 4).join(', ')
+              {canonAllies.length
+                ? canonAllies.slice(0, 8).join(', ')
                 : 'No allies listed'}
             </p>
             <p className="preview-detail">
               <span className="preview-label">Enemies:</span>
-              {apiDetails.character.enemies?.length
-                ? apiDetails.character.enemies.slice(0, 4).join(', ')
+              {canonEnemies.length
+                ? canonEnemies.slice(0, 8).join(', ')
                 : 'No enemies listed'}
+            </p>
+          </>
+        ) : !apiDetails.loading ? (
+          <>
+            <p className="preview-detail">
+              <span className="preview-label">Original Character Lore:</span>
+              Not found in canon records, so this profile is created to match the Avatar world.
+            </p>
+            <p className="preview-detail">
+              <span className="preview-label">Affiliation:</span>
+              {generatedLore.affiliation}
+            </p>
+            <p className="preview-detail">
+              <span className="preview-label">Allies:</span>
+              {generatedLore.allies.join(', ')}
+            </p>
+            <p className="preview-detail">
+              <span className="preview-label">Enemies:</span>
+              {generatedLore.enemies.join(', ')}
+            </p>
+            <p className="preview-detail">
+              <span className="preview-label">Background:</span>
+              {generatedLore.background}
             </p>
           </>
         ) : null}
