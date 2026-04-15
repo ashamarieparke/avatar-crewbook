@@ -37,7 +37,7 @@ The following **optional** features are implemented:
   - Based on the category value, users are allowed to access only a subset of the possible attributes
 - [x] A section of the summary page, displays summary statistics about a user’s crew on their crew page
   - e.g., the percent of members with a certain attribute 
-- [ ] The summary page displays a custom “success” metric about a user’s crew which changes the look of the crewmate list
+- [x] The summary page displays a custom “success” metric about a user’s crew which changes the look of the crewmate list
   - e.g., a pirate crew’s predicted success at commandeering a new galley
 
 
