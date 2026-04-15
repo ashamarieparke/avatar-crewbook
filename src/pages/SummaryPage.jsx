@@ -141,6 +141,7 @@ function SummaryPage({
   crewCategories,
   nations,
   bendingStyles,
+  getCrewmateSlug,
   onStartEdit,
 })
  {
@@ -256,7 +257,7 @@ function SummaryPage({
                 <div>
                   <p className="crew-card__label">Crewmate</p>
                   <h3>
-                    <Link className="crewmate-link" to={`/crewmate/${crewmate.id}`}>
+                    <Link className="crewmate-link" to={`/crewmate/${getCrewmateSlug(crewmate)}`}>
                       {crewmate.name}
                     </Link>
                   </h3>
@@ -269,7 +270,7 @@ function SummaryPage({
                 </div>
 
                 <div className="crew-card__actions">
-                  <Link className="edit-button" to={`/crewmate/${crewmate.id}`}>
+                  <Link className="edit-button" to={`/crewmate/${getCrewmateSlug(crewmate)}`}>
                     View Details
                   </Link>
                   <button

@@ -2,9 +2,9 @@
 
 Submitted by: **Ashamarie Parke**
 
-This web app: **an Avatar: The Last Airbender themed crewmate forge where users can create a new crewmate by naming them and choosing their nation and bending style through clickable options**
+This web app: **an Avatar: The Last Airbender themed crewmate forge where users can create a new crewmate by naming them and choosing their nation and bending style based on their category.**
 
-Time spent: **X** hours spent in total
+Time spent: **5** hours spent in total
 
 ## Required Features
 
@@ -58,7 +58,7 @@ Describe any challenges encountered while building the app.
 
 The challenges encountered are connecting the web application to Supabase, 
 when the update button was clicked, it wasn't updating in Supabase, styling the 
-background and font, 
+background and font, and adding space between the text boxes and headings.  
 
 ## License
 

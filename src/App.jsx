@@ -101,6 +101,21 @@ const normalizeCrewmate = (row) => ({
 
 const getSortTime = (value) => new Date(value).getTime() || 0
 
+const toSlug = (value) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+
+const getCrewmateSlug = (crewmate) => {
+  const base = toSlug(crewmate.name || 'unnamed-recruit') || 'unnamed-recruit'
+  const suffix = String(crewmate.id || '').slice(0, 8)
+
+  return suffix ? `${base}-${suffix}` : base
+}
+
 const gaangPresets = [
   {
     name: 'Aang',
@@ -494,12 +509,13 @@ function App() {
               crewCategories={crewCategories}
               nations={nations}
               bendingStyles={bendingStyles}
+              getCrewmateSlug={getCrewmateSlug}
               onStartEdit={startEditingCrewmate}
             />
           }
         />
         <Route
-          path="/crewmate/:id"
+          path="/crewmate/:slug"
           element={
             <CrewmateDetailPage
               crewmates={crewmates}
@@ -507,6 +523,7 @@ function App() {
               crewCategories={crewCategories}
               nations={nations}
               bendingStyles={bendingStyles}
+              getCrewmateSlug={getCrewmateSlug}
               onStartEdit={startEditingCrewmateById}
               onSaveBio={handleSaveBio}
             />

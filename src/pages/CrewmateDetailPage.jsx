@@ -180,10 +180,11 @@ function CrewmateDetailPage({
   crewCategories,
   nations,
   bendingStyles,
+  getCrewmateSlug,
   onStartEdit,
   onSaveBio,
 }) {
-  const { id } = useParams()
+  const { slug } = useParams()
   const [apiDetails, setApiDetails] = useState({
     loading: false,
     error: '',
@@ -193,7 +194,9 @@ function CrewmateDetailPage({
   const [bioStatus, setBioStatus] = useState('')
   const [isSavingBio, setIsSavingBio] = useState(false)
 
-  const crewmate = crewmates.find((entry) => String(entry.id) === String(id))
+  const crewmate =
+    crewmates.find((entry) => getCrewmateSlug(entry) === slug) ??
+    crewmates.find((entry) => String(entry.id) === String(slug))
   const crewmateId = crewmate?.id
   const crewmateBio = crewmate?.bio ?? ''
   const category = crewCategories.find((entry) => entry.id === crewmate?.category)
