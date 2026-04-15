@@ -18,7 +18,7 @@ const nations = [
   },
   {
     id: 'water',
-    label: 'Water Tribes',
+    label: 'Water Tribe',
     icon: waterNationIcon,
   },
   {
@@ -435,7 +435,7 @@ function App() {
         <h1>The Gaang Builder</h1>
         <p className="hero-copy">
           Start from a preset hero or create your own. Choose each recruit's
-          nation and bending path with clickable nation symbols.
+          nation and bending path with nation symbols.
         </p>
       </section>
 

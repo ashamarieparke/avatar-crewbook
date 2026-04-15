@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Avatar Four Nations icon">
+  <defs>
+    <clipPath id="circleClip">
+      <circle cx="32" cy="32" r="30" />
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#circleClip)">
+    <rect x="2" y="2" width="30" height="30" fill="#a9d4f2" />
+    <rect x="32" y="2" width="30" height="30" fill="#f2d3a1" />
+    <rect x="2" y="32" width="30" height="30" fill="#b7d7a8" />
+    <rect x="32" y="32" width="30" height="30" fill="#efb1a1" />
+  </g>
+
+  <circle cx="32" cy="32" r="30" fill="none" stroke="#17202d" stroke-width="3" />
+  <circle cx="32" cy="32" r="14" fill="none" stroke="#17202d" stroke-width="2.5" />
+
+  <path d="M32 13c7 0 13 6 13 13" fill="none" stroke="#17202d" stroke-width="2.5" stroke-linecap="round" />
+  <path d="M51 32c0 7-6 13-13 13" fill="none" stroke="#17202d" stroke-width="2.5" stroke-linecap="round" />
+  <path d="M32 51c-7 0-13-6-13-13" fill="none" stroke="#17202d" stroke-width="2.5" stroke-linecap="round" />
+  <path d="M13 32c0-7 6-13 13-13" fill="none" stroke="#17202d" stroke-width="2.5" stroke-linecap="round" />
+
+  <circle cx="32" cy="32" r="3" fill="#17202d" />
+</svg>
