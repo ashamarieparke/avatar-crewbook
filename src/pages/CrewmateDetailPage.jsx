@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
+// Constants and utility functions for generating original character lore based on the crewmate's attributes,
+// and for formatting the creation date of the crewmate
 const NATION_TITLES = {
   air: 'Air Nomad',
   water: 'Water Tribe',
@@ -80,6 +82,9 @@ const BENDING_STYLES = {
   },
 }
 
+// Utility function to merge multiple lists of strings into a single list of unique, trimmed, 
+// and non-empty values, used for combining allies and enemies from different sources while 
+// avoiding duplicates and empty entries
 function mergeUniqueLists(...lists) {
   const seen = new Set()
   const merged = []
@@ -102,6 +107,8 @@ function mergeUniqueLists(...lists) {
   return merged
 }
 
+// Function to show connections based on the crewmate's nation and category, 
+// combining allies and enemies from both sources
 function getShowConnections(nationId, categoryId) {
   const nationConnections = SHOW_CONNECTIONS[nationId] ?? SHOW_CONNECTIONS.unknown
   const categoryConnections = CATEGORY_CONNECTIONS[categoryId] ?? {
@@ -115,6 +122,12 @@ function getShowConnections(nationId, categoryId) {
   }
 }
 
+/// Function to build original character lore for a crewmate based on their attributes,
+//  including their affiliation, allies, enemies, and background story, 
+// using predefined templates and connections based on their nation and category. 
+// This is used when the Avatar API does not return a character profile, 
+// to create a lore that fits within the Avatar world.
+  
 function buildOriginalLore({ crewmate, nation, bending, category }) {
   const firstName = crewmate.name.split(' ')[0]
   const nationTitle = nation ? NATION_TITLES[nation.id] : 'Four Nations'
@@ -144,6 +157,9 @@ function buildOriginalLore({ crewmate, nation, bending, category }) {
   }
 }
 
+// Utility function to format the creation date of a crewmate into a human-readable string,
+// or return 'Unknown date' if the date is invalid, used in the crewmate detail page to show 
+// when the crewmate was created
 function formatCreatedAt(value) {
   const date = new Date(value)
 
@@ -154,6 +170,10 @@ function formatCreatedAt(value) {
   return date.toLocaleString()
 }
 
+// The CrewmateDetailPage component displays detailed information about a specific crewmate,
+// including their category, nation, bending style, and additional lore details fetched from the Avatar API 
+// or generated based on their attributes
+// It also allows users to edit the crewmate's bio and navigate back to the summary page
 function CrewmateDetailPage({
   crewmates,
   isLoadingCrew,
@@ -233,6 +253,8 @@ function CrewmateDetailPage({
     }
   }, [crewmate?.name])
 
+  // Function to save the custom bio for the crewmate, which calls the onSaveBio prop 
+  // function and handles loading state and error messages for the bio saving process
   const saveCustomBio = async () => {
     if (!crewmate) {
       return
@@ -274,6 +296,9 @@ function CrewmateDetailPage({
     )
   }
 
+  // Find the nation and bending style for the crewmate, and calculate show 
+  // connections and generated lore based on those attributes, to display in the detail page 
+  // alongside the API details if available
   const nation = nations.find((entry) => entry.id === crewmate.nation)
   const bending = bendingStyles.find((entry) => entry.id === crewmate.bending)
   const showConnections = getShowConnections(nation?.id, category?.id)
@@ -323,7 +348,9 @@ function CrewmateDetailPage({
           {formatCreatedAt(crewmate.createdAt)}
         </p>
       </article>
-
+    {/* Show the Avatar API details if available, or the generated lore if not, 
+    including affiliation, allies, enemies, and background story, with loading and error states 
+    for the API fetch */ }
       <article className="preview-card detail-card">
         <p className="preview-label">Details about this Character</p>
         {apiDetails.loading ? <p className="preview-detail">Loading character intel...</p> : null}
@@ -376,7 +403,9 @@ function CrewmateDetailPage({
           </>
         ) : null}
       </article>
-
+    
+      {/* Section for editing the crewmate's custom bio, with a textarea input and 
+      a save button that triggers the saveCustomBio function, along with status messages for saving and errors */ }
       <article className="preview-card detail-card">
         <p className="preview-label">Custom Bio Notes</p>
         <textarea
@@ -395,7 +424,8 @@ function CrewmateDetailPage({
         </button>
         {bioStatus ? <p className="preview-detail">{bioStatus}</p> : null}
       </article>
-
+      {/* Action buttons for editing the crewmate (which calls the onStartEdit prop function) and 
+      navigating back to the summary page */ }
       <div className="crew-card__actions">
         <button
           type="button"

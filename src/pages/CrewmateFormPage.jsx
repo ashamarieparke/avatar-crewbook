@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+// Component for displaying a character portrait, with error handling for missing images
 function CharacterPortrait({ name, photo }) {
   const [hasImageError, setHasImageError] = useState(false)
 
@@ -18,6 +19,8 @@ function CharacterPortrait({ name, photo }) {
   )
 }
 
+// Main component for the crewmate form page, which includes a preset inspiration section and a 
+// form for creating/editing crewmates, along with a live preview of the crewmate card based on the form inputs
 function CrewmateFormPage({
   nations,
   bendingStyles,
@@ -40,6 +43,8 @@ function CrewmateFormPage({
 }) {
   return (
     <>
+      {/* Preset inspiration section, which displays a grid of Gaang presets that users can click to 
+      auto-fill the form with predefined crewmate data */ }
       <section className="panel presets-panel">
         <div className="panel-heading">
           <h2>Preset Inspiration</h2>
@@ -76,6 +81,8 @@ function CrewmateFormPage({
         </div>
       </section>
 
+    {/* Form section for creating or editing a crewmate, with fields for name, category, nation, and bending style,
+     along with buttons for submitting the form, canceling edits, and deleting the crewmate if in edit mode */}
       <section className="content-grid">
         <form className="panel form-panel" onSubmit={onSubmit}>
           <div className="panel-heading">
@@ -115,6 +122,9 @@ function CrewmateFormPage({
             </div>
           </fieldset>
 
+          {/* Nation and bending style fields are conditionally enabled based on the selected category,
+           with notes to guide the user on how to unlock options, and buttons that reflect the available choices 
+           based on the selected category */ }
           <fieldset className="field-group">
             <legend>Nation</legend>
             <p className="field-note">
@@ -141,7 +151,9 @@ function CrewmateFormPage({
               })}
             </div>
           </fieldset>
-
+          
+          {/* Bending style field, which is also conditionally enabled based on the selected category, 
+          with notes and buttons for available bending styles */ }
           <fieldset className="field-group">
             <legend>Bending style</legend>
             <p className="field-note">
@@ -166,7 +178,10 @@ function CrewmateFormPage({
               })}
             </div>
           </fieldset>
-
+          
+          {/* Submit button, which changes text based on whether the form is in edit mode a
+          nd whether it is currently saving, along with conditional buttons for canceling edits a
+          nd deleting the crewmate if in edit mode, and an error message display if there is a form error */ }
           <button className="submit-button" type="submit">
             {isSaving
               ? editingCrewmateId
@@ -196,6 +211,9 @@ function CrewmateFormPage({
           {formError ? <p className="form-error">{formError}</p> : null}
         </form>
 
+        {/* Live preview panel, which shows a preview of the crewmate card that updates in real-time as
+         the user fills out the form, with conditional rendering of the selected category, 
+         nation (including icon), and bending style, or placeholder text if those fields are not yet selected */ }
         <aside className="panel preview-panel">
           <div className="panel-heading">
             <h2>Live preview</h2>

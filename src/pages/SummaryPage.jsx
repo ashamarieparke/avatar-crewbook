@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 
+// Utility functions for calculating and formatting crew stats
 const formatPercent = (value, total) => {
   if (!total) {
     return '0%'
@@ -7,7 +8,7 @@ const formatPercent = (value, total) => {
 
   return `${Math.round((value / total) * 100)}%`
 }
-
+// Counts the occurrences of values in an array based on a provided function to extract the value
 const countBy = (items, getValue) =>
   items.reduce((counts, item) => {
     const value = getValue(item) || 'Unknown'
@@ -15,6 +16,8 @@ const countBy = (items, getValue) =>
     return counts
   }, new Map())
 
+  // Gets the entry with the highest count from a Map of counts, and returns its label and count.
+  //  If no entries, returns a fallback label.
 const getTopEntry = (counts, entries, fallbackLabel) => {
   let bestId = ''
   let bestCount = 0
@@ -37,7 +40,101 @@ const getTopEntry = (counts, entries, fallbackLabel) => {
     count: bestCount,
   }
 }
+// Determines the success tier based on the crew's success score, 
+// categorizing it into 'legendary', 'strong', 'steady', or 'strained'.
+const getSuccessTier = (score) => {
+  if (score >= 85) {
+    return 'legendary'
+  }
 
+  if (score >= 65) {
+    return 'strong'
+  }
+
+  if (score >= 45) {
+    return 'steady'
+  }
+
+  return 'strained'
+}
+
+// Provides a title and note describing the crew's boarding success chance based on their success score
+const getSuccessCopy = (score) => {
+  if (score >= 85) {
+    return {
+      title: 'Legendary takeover chance',
+      note: 'This crew could probably commandeer a galley before the lookout finishes shouting.',
+    }
+  }
+
+  if (score >= 65) {
+    return {
+      title: 'Strong boarding chance',
+      note: 'This crew looks organized enough to win a hard-fought ship takeover.',
+    }
+  }
+
+  if (score >= 45) {
+    return {
+      title: 'Balanced boarding chance',
+      note: 'There is potential here, but the crew still needs sharper coordination.',
+    }
+  }
+
+  return {
+    title: 'Rough boarding chance',
+    note: 'This crew still needs a better mix of leadership, tactics, and support.',
+  }
+}
+
+// Calculates a success score for the crew based on various factors such as total crew size,
+//  category distribution, nation diversity, and bending style diversity. The score is capped at 100
+const getCrewSuccessScore = ({ totalCrew, categoryCounts, nationCounts, bendingCounts }) => {
+  let score = Math.min(totalCrew * 7, 28)
+
+  if (categoryCounts.get('leader')) {
+    score += 18
+  }
+
+  if (categoryCounts.get('strategist')) {
+    score += 14
+  }
+
+  if (categoryCounts.get('guardian')) {
+    score += 10
+  }
+
+  if (categoryCounts.get('scout')) {
+    score += 8
+  }
+
+  if (nationCounts.size >= 4) {
+    score += 18
+  } else if (nationCounts.size === 3) {
+    score += 12
+  } else if (nationCounts.size === 2) {
+    score += 6
+  }
+
+  if (bendingCounts.get('nonbender')) {
+    score += 8
+  }
+
+  if (bendingCounts.get('air') && bendingCounts.get('water')) {
+    score += 6
+  }
+
+  if (bendingCounts.get('earth') && bendingCounts.get('fire')) {
+    score += 6
+  }
+
+  return Math.min(score, 100)
+}
+
+// The SummaryPage component displays an overview of the user's crew,
+// including total crew size, most common category/nation/bending style, and a success metric 
+// based on crew composition. It also lists all crewmates with links to their detail pages and options to
+// edit them.
 function SummaryPage({
   orderedCrewmates,
   isLoadingCrew,
@@ -45,11 +142,20 @@ function SummaryPage({
   nations,
   bendingStyles,
   onStartEdit,
-}) {
+})
+ {
   const totalCrew = orderedCrewmates.length
   const categoryCounts = countBy(orderedCrewmates, (crewmate) => crewmate.category)
   const nationCounts = countBy(orderedCrewmates, (crewmate) => crewmate.nation)
   const bendingCounts = countBy(orderedCrewmates, (crewmate) => crewmate.bending)
+  const successScore = getCrewSuccessScore({
+    totalCrew,
+    categoryCounts,
+    nationCounts,
+    bendingCounts,
+  })
+  const successTier = getSuccessTier(successScore)
+  const successCopy = getSuccessCopy(successScore)
   const topCategory = getTopEntry(categoryCounts, crewCategories, 'Uncategorized')
   const topNation = getTopEntry(nationCounts, nations, 'Unknown nation')
   const topBending = getTopEntry(bendingCounts, bendingStyles, 'Unknown bending')
@@ -96,6 +202,20 @@ function SummaryPage({
             </article>
           </div>
 
+          <article className={`crew-success ${successTier}`}>
+            <div className="crew-success__heading">
+              <div>
+                <p className="crew-card__label">Success metric</p>
+                <h4>{successCopy.title}</h4>
+              </div>
+              <strong>{successScore}%</strong>
+            </div>
+            <div className="crew-success__bar" aria-hidden="true">
+              <span style={{ width: `${successScore}%` }} />
+            </div>
+            <p>{successCopy.note}</p>
+          </article>
+
           <div className="crew-stats-breakdown">
             {nations.map((nation) => {
               const count = nationCounts.get(nation.id) ?? 0
@@ -123,7 +243,7 @@ function SummaryPage({
       ) : null}
 
       {orderedCrewmates.length > 0 ? (
-        <div className="crew-grid">
+        <div className={`crew-grid crew-grid--${successTier}`}>
           {orderedCrewmates.map((crewmate) => {
             const category = crewCategories.find((entry) => entry.id === crewmate.category)
             const nation = nations.find((entry) => entry.id === crewmate.nation)

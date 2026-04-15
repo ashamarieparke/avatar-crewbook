@@ -1,10 +1,12 @@
+/* Global styles and component-specific styles for the Avatar crew builder application */
 .page-shell {
   position: relative;
   width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
   padding: 40px 0 56px;
 }
-
+/* Creates a decorative background effect behind the main content, using radial 
+and linear gradients to add visual interest. */
 .page-shell::before {
   content: '';
   position: absolute;
@@ -22,12 +24,15 @@
   filter: drop-shadow(0 32px 40px rgba(8, 20, 34, 0.28));
 }
 
+/* Adjusts the background size and position for smaller screens to maintain visual appeal */
 .hero-panel {
   color: #17202d;
   padding: 48px 44px 36px;
   text-align: left;
 }
 
+/* Responsive adjustments for the hero panel on smaller screens, 
+reducing padding and adjusting background size */
 .eyebrow {
   margin-bottom: 14px;
   letter-spacing: 0.2em;
@@ -42,7 +47,8 @@
   color: #111827;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.32);
 }
-
+/* Styles for the hero section, including the main heading and supporting text, 
+with responsive adjustments for smaller screens */
 .hero-copy {
   margin-top: 16px;
   max-width: 54ch;
@@ -50,13 +56,15 @@
   line-height: 1.65;
   color: rgba(17, 24, 39, 0.88);
 }
-
+/* Styles for the supporting text in the hero section, providing a clear introduction to the application */
 .page-switch {
   margin-top: 10px;
   display: inline-flex;
   gap: 10px;
 }
 
+/* Styles for the page switch buttons, which allow users to navigate between different sections
+ of the application, with visual feedback for the active page */
 .page-switch__button {
   border: 1px solid rgba(33, 52, 75, 0.2);
   background: rgba(255, 255, 255, 0.88);
@@ -73,6 +81,9 @@
   background: rgba(248, 226, 199, 0.9);
 }
 
+/* Base styles for panels used throughout the application, 
+ with a subtle background and shadow */
+
 .panel {
   background: rgba(255, 252, 247, 0.97);
   border: 1px solid rgba(33, 52, 75, 0.1);
@@ -80,7 +91,8 @@
   box-shadow: 0 24px 54px rgba(17, 32, 50, 0.12);
   backdrop-filter: blur(10px);
 }
-
+/* Styles for the presets panel, which displays available crew presets for users to choose from, 
+with a responsive grid layout for the preset cards */
 .presets-panel {
   padding: 24px 28px 28px;
   margin-top: 12px;
@@ -211,11 +223,15 @@
   text-align: left;
 }
 
+/* Styles for the form panel, which contains the crew creation form, and the preview panel, 
+which shows a summary of the crew being built, with responsive adjustments for smaller screens */
 .form-panel label.field-group {
   display: block;
   margin-bottom: 52px;
 }
 
+/* Styles for form fields, including labels, input fields, and helper text,
+ with focus states for better accessibility */
 .field-group legend,
 .field-group span {
   display: inline-block;
@@ -257,6 +273,8 @@
   box-shadow: 0 0 0 4px rgba(20, 76, 96, 0.14);
 }
 
+/* Button grid styles for arranging buttons in a responsive grid layout,
+ with variations for different contexts such as categories and stacked layouts */
 .button-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -271,6 +289,8 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+/* Styles for choice buttons used in the crew creation form, w
+ith variations for different categories and states (selected, disabled) */
 .choice-button {
   border: 1px solid rgba(33, 52, 75, 0.14);
   border-radius: 20px;
@@ -373,6 +393,7 @@
   background: transparent;
 }
 
+/* Styles for the submit button on the crew creation form, with hover and focus states for better interactivity */
 .submit-button {
   width: 100%;
   border: 0;
@@ -396,6 +417,8 @@
   outline: none;
 }
 
+/* Styles for secondary buttons used for less prominent actions, such as editing or canceling,
+ with variations for delete actions and hover/focus states for better user feedback */
 .secondary-button,
 .edit-button {
   border: 1px solid rgba(33, 52, 75, 0.18);
@@ -448,6 +471,7 @@
   font-weight: 700;
 }
 
+/* Styles for preview cards, empty states, and crew cards */
 .preview-card,
 .empty-state,
 .crew-card {
@@ -507,6 +531,8 @@
   gap: 14px;
 }
 
+/* Styles for the crew stats panel, which provides an overview of the crew's composition and success metrics,
+ with a responsive grid layout for the stats breakdown */
 .crew-stats-panel {
   margin-bottom: 20px;
   padding: 20px;
@@ -532,6 +558,78 @@
   margin-top: 18px;
 }
 
+/* Styles for the crew success card, which displays the crew's boarding success chance and related metrics,
+ with variations for different success tiers (legendary, strong, steady, strained) */
+.crew-success {
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(33, 52, 75, 0.1);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.crew-success.strong {
+  border-color: rgba(194, 115, 41, 0.3);
+  background: linear-gradient(180deg, rgba(255, 247, 233, 0.98), rgba(255, 250, 244, 0.96));
+}
+
+.crew-success.legendary {
+  border-color: rgba(212, 150, 43, 0.42);
+  background: linear-gradient(180deg, rgba(255, 243, 216, 0.98), rgba(255, 251, 243, 0.98));
+  box-shadow: 0 14px 30px rgba(194, 115, 41, 0.12);
+}
+
+.crew-success.steady {
+  border-color: rgba(74, 134, 200, 0.25);
+  background: linear-gradient(180deg, rgba(241, 248, 255, 0.98), rgba(250, 252, 255, 0.98));
+}
+
+.crew-success.strained {
+  border-color: rgba(173, 56, 39, 0.22);
+  background: linear-gradient(180deg, rgba(255, 242, 239, 0.98), rgba(255, 249, 247, 0.98));
+}
+
+.crew-success__heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.crew-success__heading h4 {
+  margin: 4px 0 0;
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+.crew-success__heading strong {
+  font-size: 1.65rem;
+  color: #b54d1b;
+}
+
+.crew-success__bar {
+  height: 12px;
+  margin-top: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(20, 76, 96, 0.12);
+}
+
+.crew-success__bar span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #4a86c8, #d86e1f);
+}
+
+.crew-success p {
+  margin: 12px 0 0;
+  color: #4a433d;
+  line-height: 1.55;
+}
+
+/* Styles for individual crew stat cards, which display specific metrics about the crew's composition,
+ such as category distribution, nation diversity, and bending style diversity */
 .crew-stat {
   padding: 16px;
   border-radius: 18px;
@@ -608,6 +706,45 @@
   text-align: left;
 }
 
+/* Variations for crew cards based on the crew's success tier, with different background gradients,
+ border colors, and shadows to visually differentiate between legendary, strong, steady, and strained crews */
+.crew-grid--legendary .crew-card {
+  background: linear-gradient(180deg, rgba(255, 250, 235, 0.98), rgba(255, 244, 219, 0.98));
+  border-color: rgba(194, 115, 41, 0.24);
+  box-shadow: 0 16px 28px rgba(194, 115, 41, 0.1);
+}
+
+.crew-grid--strong .crew-card {
+  background: linear-gradient(180deg, rgba(255, 251, 244, 0.98), rgba(255, 245, 231, 0.98));
+  border-color: rgba(194, 115, 41, 0.18);
+}
+
+.crew-grid--steady .crew-card {
+  background: linear-gradient(180deg, rgba(248, 252, 255, 0.98), rgba(240, 247, 255, 0.98));
+  border-color: rgba(74, 134, 200, 0.18);
+}
+
+.crew-grid--strained .crew-card {
+  background: linear-gradient(180deg, rgba(255, 248, 246, 0.98), rgba(255, 242, 239, 0.98));
+  border-color: rgba(173, 56, 39, 0.18);
+  box-shadow: 0 10px 22px rgba(173, 56, 39, 0.08);
+}
+
+.crew-grid--legendary .crewmate-link,
+.crew-grid--strong .crewmate-link {
+  color: #8d2d21;
+}
+
+.crew-grid--steady .crewmate-link {
+  color: #134a7c;
+}
+
+.crew-grid--strained .crewmate-link {
+  color: #8d2d21;
+}
+
+/* Styles for links to individual crewmate detail pages, with color variations based on the crew's success tier,
+ and hover/focus states for better interactivity */
 .crewmate-link {
   color: #111827;
   text-decoration: none;
@@ -683,6 +820,8 @@
   color: #332e29;
 }
 
+/* Responsive adjustments for smaller screens, including stacking columns, 
+reducing padding, and adjusting grid layouts for better readability and usability on mobile devices */
 @media (max-width: 900px) {
   .content-grid {
     grid-template-columns: 1fr;
@@ -705,6 +844,8 @@
   }
 }
 
+/* Further adjustments for very small screens, such as reducing the size of the background effect, 
+adjusting padding, and stacking all buttons in a single column for optimal mobile usability */
 @media (max-width: 640px) {
   .page-shell {
     width: min(100%, calc(100% - 20px));
