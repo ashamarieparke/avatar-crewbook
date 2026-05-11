@@ -1,0 +1,9 @@
+site_id = "ca903706-4f67-46a0-be5d-a907c581dbf4"
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[context.production.environment]
+  # Add environment variables for production here, e.g.
+  # REACT_APP_API_URL = "https://api.example.com"
