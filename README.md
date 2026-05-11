@@ -1,6 +1,6 @@
 # *Avatar Crewbook*
 
-Submitted by: **Ashamarie Parke**
+Done by: **Ashamarie Parke**
 
 This web app: **an Avatar: The Last Airbender themed crewmate forge where users can create a new crewmate by naming them and choosing their nation and bending style based on their category.**
 
