@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Navigate, NavLink, Route, Routes, useNavigate } from 'react-router-dom'
 import './App.css'
-import { isSupabaseConfigured, supabase } from './client'
+import { isSupabaseConfigured, supabase, getSessionId } from './client'
 import CrewmateFormPage from './pages/CrewmateFormPage'
 import SummaryPage from './pages/SummaryPage'
 import CrewmateDetailPage from './pages/CrewmateDetailPage'
@@ -207,9 +207,11 @@ function App() {
         return
       }
 
+      const sessionId = getSessionId()
       const { data, error } = await supabase
         .from(CREWMATES_TABLE)
         .select('*')
+        .eq('session_id', sessionId)
         .order('created_at', { ascending: false })
 
       if (error) {
@@ -383,6 +385,11 @@ function App() {
       category: formData.category,
       nation: formData.nation,
       bending: formData.bending,
+    }
+
+    // Add session_id for new crewmates to isolate by browser
+    if (!editingCrewmateId) {
+      payload.session_id = getSessionId()
     }
 
     const request = editingCrewmateId
