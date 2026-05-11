@@ -26,3 +26,14 @@ dist-ssr
 
 # Local Netlify folder
 .netlify
+
+# Build and cache
+coverage/
+.cache/
+.parcel-cache/
+.vite/
+.vercel/
+
+# Private keys and certificates
+*.pem
+*.key
